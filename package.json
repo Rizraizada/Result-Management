@@ -1,0 +1,50 @@
+{
+  "name": "Bhs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development node app.js",
+    "build": "next build",
+    "start": "cross-env NODE_ENV=production node app.js",
+    "serve": "npm run build && npm run start"
+  },
+  "dependencies": {
+    "@fontsource/anek-bangla": "^5.1.0",
+    "@react-pdf/renderer": "^4.1.5",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-validator": "^7.2.0",
+    "framer-motion": "^11.11.9",
+    "fs": "^0.0.1-security",
+    "html-to-text": "^9.0.5",
+    "jsonwebtoken": "^9.0.2",
+    "jspdf": "^2.5.2",
+    "lodash.debounce": "^4.0.8",
+    "lucide-react": "^0.446.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.12.0",
+    "next": "^14.2.20",
+    "react": "^18.3.1",
+    "react-dom": "^18",
+    "react-icons": "^5.3.0",
+    "react-paginate": "^8.2.0",
+    "react-quill": "^2.0.0",
+    "react-responsive-carousel": "^3.2.23",
+    "sharp": "^0.33.5",
+    "slick-carousel": "^1.8.1",
+    "sweetalert2": "^11.14.5",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "cross-env": "^7.0.3",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15"
+  },
+  "packageManager": "yarn@1.22.19+sha512.ff4579ab459bb25aa7c0ff75b62acebe576f6084b36aa842971cf250a5d8c6cd3bc9420b22ce63c7f93a0857bc6ef29291db39c3e7a23aab5adfd5a4dd6c5d71"
+}

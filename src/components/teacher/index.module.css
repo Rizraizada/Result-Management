@@ -1,0 +1,138 @@
+/* Slider Container */
+.sliderContainer {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    background: #f9fafb;
+    padding: 2rem 0;
+  }
+  
+  /* Slider Track for Animation */
+  .sliderTrack {
+    display: flex;
+    gap: 1.5rem;
+    animation: scroll-left 20s linear infinite;
+  }
+  
+  /* Individual Slider Items */
+  .sliderItem {
+    flex: 0 0 auto;
+    width: 280px;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .sliderItem:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Teacher Image Styling */
+  .teacherImage {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    border: 4px solid #3b82f6;
+    transition: transform 0.3s ease;
+  }
+  
+  .sliderItem:hover .teacherImage {
+    transform: scale(1.1);
+  }
+  
+  /* Teacher Name and Position */
+  .teacherName {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  .teacherPosition {
+    font-size: 1rem;
+    color: #6b7280;
+  }
+  
+  /* Scroll Animation */
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  
+  .sliderTrack {
+    animation: scroll-left 20s linear infinite;
+    display: flex;
+    width: calc(200%); /* Ensures a smooth transition */
+  }
+  
+  /* Pause animation on hover */
+  .sliderTrack:hover {
+    animation-play-state: paused;
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 1024px) {
+    .sliderItem {
+      width: 240px;
+    }
+  
+    .teacherImage {
+      width: 100px;
+      height: 100px;
+    }
+  
+    .teacherName {
+      font-size: 1.1rem;
+    }
+  
+    .teacherPosition {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .sliderItem {
+      width: 200px;
+    }
+  
+    .teacherImage {
+      width: 90px;
+      height: 90px;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    .sliderItem {
+      width: 180px;
+      padding: 1rem;
+    }
+  
+    .teacherImage {
+      width: 80px;
+      height: 80px;
+    }
+  
+    .teacherName {
+      font-size: 1rem;
+    }
+  
+    .teacherPosition {
+      font-size: 0.8rem;
+    }
+  
+    .sliderTrack {
+      gap: 1rem;
+    }
+  }
+  

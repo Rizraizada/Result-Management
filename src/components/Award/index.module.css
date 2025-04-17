@@ -1,0 +1,310 @@
+.award-presentation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3rem;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e6eeff 100%);
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+}
+
+.award-text {
+    width: 34%;
+    margin-left: 135px;
+    position: relative;
+    z-index: 2;
+}
+
+.school-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.badge-icon {
+    font-size: 24px;
+}
+
+.badge-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2d3748;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.award-title {
+    font-size: 2.8rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #1a365d;
+    line-height: 1.2;
+    position: relative;
+}
+
+.award-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #4299e1, #667eea);
+    margin-top: 20px;
+    border-radius: 2px;
+}
+
+.award-description {
+    color: #4a5568;
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+.award-medal {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.medal-container {
+    position: relative;
+    animation: float 3s ease-in-out infinite;
+}
+
+.medal-container img {
+    height: 24rem;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+}
+
+.medal-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 179, 237, 0.2) 0%, rgba(99, 179, 237, 0) 70%);
+    z-index: -1;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.award-carousel {
+    width: 45%;
+    position: relative;
+    z-index: 2;
+}
+
+.image-container {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    transform: scale(1);
+    transition: transform 0.3s ease;
+}
+
+.image-container:hover .carousel-image {
+    transform: scale(1.05);
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+}
+
+.carousel-text {
+    position: absolute;
+    bottom: 90px;
+    left: 30px;
+    color: white;
+    z-index: 2;
+}
+
+.carousel-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.school-initial {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.school-name {
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    opacity: 0.9;
+}
+
+.carousel-award {
+    text-align: left;
+}
+
+.award-name {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.award-detail {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.carousel-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.carousel-control {
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.carousel-control:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    background: #4299e1;
+    color: white;
+}
+
+.loading {
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    font-size: 1.1rem;
+    color: #4a5568;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.3; }
+}
+
+/* Responsive Design */
+@media (max-width: 1280px) {
+    .award-text {
+        width: 40%;
+        margin-left: 50px;
+    }
+    
+    .award-title {
+        font-size: 2.4rem;
+    }
+    
+    .medal-container img {
+        height: 20rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .award-presentation {
+        flex-direction: column;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .award-text {
+        width: 90%;
+        margin: 0 auto 3rem;
+    }
+    
+    .award-title::after {
+        margin: 20px auto 0;
+    }
+    
+    .award-medal {
+        position: relative;
+        transform: none;
+        margin: 2rem 0;
+        left: auto;
+        top: auto;
+    }
+    
+    .medal-container img {
+        height: 16rem;
+    }
+    
+    .award-carousel {
+        width: 90%;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .award-title {
+        font-size: 2rem;
+    }
+    
+    .carousel-image {
+        height: 300px;
+    }
+    
+    .school-initial {
+        font-size: 1.6rem;
+    }
+    
+    .award-name {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .award-presentation {
+        padding: 1rem;
+    }
+    
+    .medal-container img {
+        height: 12rem;
+    }
+    
+    .carousel-image {
+        height: 250px;
+    }
+    
+    .carousel-text {
+        bottom: 70px;
+        left: 20px;
+    }
+}

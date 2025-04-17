@@ -1,0 +1,139 @@
+.footer {
+  background-color: #f9f9f9;
+  color: #222222;
+  font-family: 'SolaimanLipi', 'Noto Serif Bengali', serif;
+  border-top: 4px solid #007E33;
+  padding: 50px 0 20px;
+  margin-top: 40px;
+  position: relative;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.logoSection {
+  flex: 1.2;
+}
+
+.schoolName {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #006400;
+  text-shadow: 0 1px 0 #ccc;
+}
+
+.slogan {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #444;
+}
+
+.quickLinks h3,
+.officialInfo h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+  border-left: 5px solid #C62828;
+  padding-left: 10px;
+  color: #333;
+}
+
+.quickLinks ul {
+  list-style: none;
+  padding: 0;
+}
+
+.quickLinks li {
+  margin-bottom: 10px;
+}
+
+.quickLinks a {
+  color: #007E33;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.quickLinks a:hover {
+  text-decoration: underline;
+}
+
+.officialInfo {
+  flex: 1;
+}
+
+.officialInfo p {
+  color: #333;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.socialLinks {
+  margin-top: 15px;
+}
+
+.socialLinks a {
+  font-size: 20px;
+  color: #C62828;
+  margin-right: 10px;
+}
+
+.copyright {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px dashed #bbb;
+  font-size: 14px;
+  color: #444;
+}
+
+.motto {
+  font-style: italic;
+  color: #C62828;
+  margin-top: 10px;
+}
+
+.scrollTopButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 45px;
+  height: 45px;
+  background: #C62828;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.scrollTopButton:hover {
+  background: #a52121;
+}
+
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+  }
+
+  .quickLinks h3,
+  .officialInfo h3 {
+    border-left: none;
+    border-bottom: 2px solid #C62828;
+    display: inline-block;
+    padding-bottom: 5px;
+  }
+}
