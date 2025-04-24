@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}"
+self.__REACT_LOADABLE_MANIFEST='{"pages/admin/gallery.js -> react-quill":{"id":1167,"files":["static/chunks/eabe11fc.127f806253a0cec7.js","static/chunks/876-a634cdce56b18bb5.js","static/chunks/167.28e52c900231d5b3.js"]},"pages/admin/notice/notice.js -> react-quill":{"id":1167,"files":["static/chunks/eabe11fc.127f806253a0cec7.js","static/chunks/876-a634cdce56b18bb5.js","static/chunks/167.28e52c900231d5b3.js"]}}';
