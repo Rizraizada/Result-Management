@@ -1,1 +1,9 @@
-{"/StudentResult":"pages/StudentResult.html","/_error":"pages/_error.js","/_app":"pages/_app.js","/admin/award":"pages/admin/award.html","/admin/add-slider":"pages/admin/add-slider.html","/admin/gallery":"pages/admin/gallery.html","/admin/attendance/quickattendence":"pages/admin/attendance/quickattendence.html","/admin/attendance/attendance":"pages/admin/attendance/attendance.html","/admin/class":"pages/admin/class.html","/admin/notice/notice":"pages/admin/notice/notice.html","/admin/section":"pages/admin/section.html","/admin/headmaster":"pages/admin/headmaster.html","/admin/student-result":"pages/admin/student-result.html","/admin/student/student-list":"pages/admin/student/student-list.html","/admin/student/Excel-Entry":"pages/admin/student/Excel-Entry.html","/admin/teacher-sections":"pages/admin/teacher-sections.html","/admin/teacher/add-teacher":"pages/admin/teacher/add-teacher.html","/admin/teacher-dashboard":"pages/admin/teacher-dashboard.html","/admin/student/add-student":"pages/admin/student/add-student.html","/admin/teacher/teacher-list":"pages/admin/teacher/teacher-list.html","/home/chairman-message":"pages/home/chairman-message.html","/gallery":"pages/gallery.html","/home/principal-message":"pages/home/principal-message.html","/contact":"pages/contact.html","/":"pages/index.html","/login":"pages/login.html","/unauthorized":"pages/unauthorized.html","/notice":"pages/notice.html","/home/assistant-head-message":"pages/home/assistant-head-message.html","/notice/[id]":"pages/notice/[id].js","/_document":"pages/_document.js","/404":"pages/404.html"}
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/": "pages/index.js",
+  "/admin/student-result": "pages/admin/student-result.js",
+  "/admin/headmaster": "pages/admin/headmaster.js",
+  "/login": "pages/login.js"
+}
