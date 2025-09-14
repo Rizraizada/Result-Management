@@ -1,0 +1,373 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&display=swap');
+
+.header {
+  background: #ffffff;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+.content {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+}
+
+.topHeader {
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.logoImage {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.schoolInfo {
+  text-align: center;
+}
+
+.schoolInfo h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  color: #1b1f18;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.schoolInfo p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  color: #150217;
+  margin: 0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(to right, #0834e4, #8e8585, #7b98f7);
+  padding: 0;
+  justify-content: center;
+}
+
+.navItemContainer {
+  position: relative;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navItem svg {
+  color: #ffffff;
+}
+
+.navItem.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dropdownToggle {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #ffffff;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  min-width: 250px;
+  z-index: 100;
+  border: 1px solid rgba(37, 99, 235, 0.1);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.desktopDropdown {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.navItemContainer:hover .desktopDropdown {
+  display: block;
+  opacity: 1;
+  max-height: 500px;
+  overflow: visible;
+}
+
+.dropdown.mobileDropdown,
+.dropdown.open {
+  max-height: 500px;
+  overflow: visible;
+}
+
+.dropdownItem {
+  display: block;
+  padding: 0.75rem 1.25rem;
+  color: #1f2937;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  background: white;
+}
+
+.dropdownItem:hover {
+  background: #f3f4f6;
+  color: #2563eb;
+}
+
+.noticeBar {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap; /* Prevents line breaks */
+
+}
+
+.noticeLabel {
+  background: #c91b1b;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+}
+
+.noticeContent {
+  padding: 0.5rem 1rem;
+  overflow: hidden;
+}
+
+.marquee {
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.menuToggle {
+  display: none;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 1100;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .logoContainer {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .logoImage {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+
+  .schoolInfo {
+    margin-right: 0;
+  }
+
+  .schoolInfo h1 {
+    font-size: 1.5rem;
+    margin: 0; /* Remove default margin for better spacing */
+  }
+
+  .nav {
+    display: none; /* Initially hidden */
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 65%;
+    height: 100vh; /* Use 100vh for full height */
+    background: #f9fafb;
+    z-index: 1000;
+    overflow-y: auto; /* Enable vertical scrolling */
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    padding: 1rem; /* Add padding for better spacing */
+  }
+
+  .nav.open {
+    display: flex; /* Show when open */
+    transform: translateX(0);
+  }
+
+  .menuToggle {
+    display: block;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1100;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+  }
+
+  .nav {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 65%;
+    height: 100vh;
+    background: #f9fafb;
+    z-index: 1000;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    padding: 1rem;
+  }
+
+  .nav.open {
+    display: flex;
+    transform: translateX(0);
+  }
+
+  .navItem {
+    width: 100%;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .navItem:hover {
+    background: #e0e0e0;
+  }
+
+  .navItem svg {
+    color: #333;
+  }
+
+  .navItemContainer {
+    position: relative;
+    width: 100%;
+  }
+
+  .dropdownToggle {
+    right: 20px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #333;
+    cursor: pointer;
+  }
+
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #ffffff;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    min-width: 250px;
+    z-index: 100;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding: 0;
+  }
+
+  .dropdown.open {
+    max-height: 300px;
+    padding: 0.5rem 1rem;
+    background-color: #f0f0f0;
+  }
+
+  .dropdownItem {
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+  }
+
+  .dropdownItem:hover {
+    background: #e0e0e0;
+    color: #2563eb;
+  }
+
+  .mobileSidebarLogo {
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .desktopDropdown {
+    display: none; /* Hide desktop dropdown on mobile */
+  }
+
+  /* Scrollbar Styles */
+  .nav {
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: #697fd6 #f9fafb; /* For Firefox */
+  }
+
+  .nav::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+
+  .nav::-webkit-scrollbar-track {
+    background: #f9fafb; /* Track color */
+  }
+
+  .nav::-webkit-scrollbar-thumb {
+    background-color: #697fd6; /* Scrollbar color */
+    border-radius: 10px; /* Rounded corners */
+  }
+
+  .nav::-webkit-scrollbar-thumb:hover {
+    background-color: #5a6bbf; /* Darker on hover */
+  }
+}
