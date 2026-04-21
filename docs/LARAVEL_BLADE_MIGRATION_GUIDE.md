@@ -1,528 +1,1073 @@
-# Laravel Blade Migration Guide (Full Project)
+# Laravel Blade Full Blueprint (Tables + Controllers + Result/Attendance PDF Design)
 
-## 1) What this current project is
+This document is the **full implementation blueprint** for rebuilding this project in **Laravel + Blade** with feature parity.
 
-This repository is a **monolithic Node.js app**:
+It includes:
 
-- **Frontend:** Next.js (Pages Router) + React + Tailwind
-- **Backend API:** Express (`server.js`) with routes under `Backend/routes`
-- **Database:** MySQL (`mysql2`), raw SQL in model files
-- **Auth:** JWT in `authToken` cookie
-- **Uploads:** local files in `Backend/uploads`, served by `/uploads`
-
-There are no migration files and no test suite in the current app.
+1. Full module mapping
+2. Exact table blueprint (all current tables)
+3. Controller blueprint (public + admin + report + import/export)
+4. Route blueprint
+5. Result PDF + Attendance PDF design blueprint (matching current behavior)
+6. Full command checklist
 
 ---
 
-## 2) Current module inventory (what must be rebuilt in Laravel)
+## 1) Current project summary (source system)
 
-## Public/website features
+- Frontend: Next.js (Pages Router) + Tailwind
+- Backend: Express (`server.js`) + route/controller/model folders under `Backend/`
+- DB: MySQL with raw SQL
+- Auth: cookie JWT (`authToken`)
+- Uploads: local files in `Backend/uploads`
+- Result and report PDFs: generated on frontend using `@react-pdf/renderer`
 
-- Home page sections: slider, about, teacher list, notices, awards, news/events, result search
-- Teacher/staff listing
-- Committee member listing
-- Gallery
-- Notice board + notice details
-- Contact page
-- Public student result search + grouped summary
-
-## Admin features
-
-- Login/logout + role-based access (`headmaster`, `teacher`, `principal`)
-- Slider CRUD
-- Award CRUD
-- Gallery CRUD
-- Director/committee CRUD
-- Class CRUD
-- Section CRUD
-- Teacher-section assignment CRUD
-- Teacher CRUD (user management)
-- Student CRUD + Excel import
-- Daily attendance (per student) + report
-- Quick attendance (aggregate) + report
-- Notice CRUD
-- Student result CRUD + Excel upload + bulk delete + grouped summary
-- Subject configuration CRUD
-- Tabulation/report UI
-
-## Database tables found in code
+Tables used in code:
 
 - `users`
-- `students`
+- `slider`
+- `awards`
+- `activities`
+- `gallery`
+- `board_of_directors`
+- `branch`
+- `news`
+- `notices`
 - `classes`
 - `sections`
+- `students`
 - `teacher_sections`
 - `attendance`
 - `quick_attendance`
 - `student_results`
 - `subject_config`
-- `notices`
-- `slider`
-- `awards`
-- `gallery`
-- `board_of_directors`
-- `activities`
-- `news`
-- `branch`
 
 ---
 
-## 3) Laravel target architecture (recommended)
+## 2) Laravel stack to use
 
-Use **Laravel + Blade + MySQL** in one app:
+## Core
 
-- Blade for all public and admin UIs
-- Eloquent models for all tables
-- Form Request validation
-- Middleware-based role guards
-- Laravel Storage for uploads
-- Optional: queue/jobs for heavy imports later
+- Laravel 12 (or latest stable)
+- Blade templates
+- MySQL
+- Laravel Breeze (auth)
+- Spatie Permission (roles)
 
-Recommended structure:
+## File + import/export + PDF
 
-- `app/Models/*` -> each table model
-- `app/Http/Controllers/Public/*`
-- `app/Http/Controllers/Admin/*`
-- `app/Http/Controllers/Auth/*`
-- `app/Http/Requests/*` for validation
-- `resources/views/layouts/*`
-- `resources/views/public/*`
-- `resources/views/admin/*`
-- `routes/web.php` for Blade routes
-- `routes/api.php` only if you keep API endpoints
+- `maatwebsite/excel` (Excel import/export)
+- `barryvdh/laravel-dompdf` (PDF generation in Laravel)
+
+> Current system uses React-PDF. In Laravel you should shift to server-side Blade-to-PDF.
 
 ---
 
-## 4) Exact setup commands (fresh Laravel Blade project)
-
-> Run these commands in your terminal. Adjust DB credentials for your machine.
+## 3) Full setup commands (run in sequence)
 
 ```bash
-# 1) Create new Laravel app
 composer create-project laravel/laravel bhs-laravel
 cd bhs-laravel
 
-# 2) Basic app key and env
 cp .env.example .env
 php artisan key:generate
 
-# 3) Install auth scaffolding (Blade)
+# Auth scaffold (Blade)
 composer require laravel/breeze --dev
 php artisan breeze:install blade
 npm install
 npm run build
 
-# 4) Role/permission package (recommended)
+# Roles/permissions
 composer require spatie/laravel-permission
 php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
 
-# 5) Create storage symlink for uploads
+# Excel + PDF
+composer require maatwebsite/excel
+composer require barryvdh/laravel-dompdf
+
+# Storage symlink
 php artisan storage:link
+```
 
-# 6) Create all models+migrations+controllers+requests
-php artisan make:model Slider -mcr
-php artisan make:model Award -mcr
-php artisan make:model GalleryItem -mcr
-php artisan make:model Director -mcr
-php artisan make:model SchoolClass -mcr
-php artisan make:model Section -mcr
-php artisan make:model Student -mcr
-php artisan make:model TeacherSection -mcr
-php artisan make:model Attendance -mcr
-php artisan make:model QuickAttendance -mcr
-php artisan make:model StudentResult -mcr
-php artisan make:model SubjectConfig -mcr
-php artisan make:model Notice -mcr
-php artisan make:model Activity -mcr
-php artisan make:model News -mcr
-php artisan make:model Branch -mcr
+Generate base app layers:
 
-# Optional dedicated admin/public controllers
+```bash
+# Models + migrations
+php artisan make:model Slider -m
+php artisan make:model Award -m
+php artisan make:model Activity -m
+php artisan make:model GalleryItem -m
+php artisan make:model Director -m
+php artisan make:model Branch -m
+php artisan make:model News -m
+php artisan make:model Notice -m
+php artisan make:model SchoolClass -m
+php artisan make:model Section -m
+php artisan make:model Student -m
+php artisan make:model TeacherSection -m
+php artisan make:model Attendance -m
+php artisan make:model QuickAttendance -m
+php artisan make:model StudentResult -m
+php artisan make:model SubjectConfig -m
+
+# Controllers
 php artisan make:controller Public/HomeController
 php artisan make:controller Public/NoticeController
 php artisan make:controller Public/GalleryController
-php artisan make:controller Public/ResultSearchController
+php artisan make:controller Public/TeacherController
+php artisan make:controller Public/CommitteeController
+php artisan make:controller Public/ResultController
 
 php artisan make:controller Admin/DashboardController
 php artisan make:controller Admin/UserController
+php artisan make:controller Admin/SliderController
+php artisan make:controller Admin/AwardController
+php artisan make:controller Admin/GalleryController
+php artisan make:controller Admin/DirectorController
 php artisan make:controller Admin/ClassController
 php artisan make:controller Admin/SectionController
 php artisan make:controller Admin/TeacherSectionController
 php artisan make:controller Admin/StudentController
 php artisan make:controller Admin/AttendanceController
 php artisan make:controller Admin/QuickAttendanceController
+php artisan make:controller Admin/NoticeController
 php artisan make:controller Admin/StudentResultController
 php artisan make:controller Admin/SubjectConfigController
-php artisan make:controller Admin/NoticeController
-php artisan make:controller Admin/SliderController
-php artisan make:controller Admin/AwardController
-php artisan make:controller Admin/GalleryController
-php artisan make:controller Admin/DirectorController
+php artisan make:controller Admin/ReportController
 
-# Requests (validation)
-php artisan make:request StoreStudentRequest
-php artisan make:request UpdateStudentRequest
-php artisan make:request StoreStudentResultRequest
-php artisan make:request UpdateStudentResultRequest
-php artisan make:request StoreQuickAttendanceRequest
-php artisan make:request StoreAttendanceRequest
+# Requests
+php artisan make:request Auth/LoginRequest
+php artisan make:request Admin/StoreUserRequest
+php artisan make:request Admin/UpdateUserRequest
+php artisan make:request Admin/StoreStudentRequest
+php artisan make:request Admin/UpdateStudentRequest
+php artisan make:request Admin/StoreAttendanceBulkRequest
+php artisan make:request Admin/StoreQuickAttendanceRequest
+php artisan make:request Admin/StoreStudentResultRequest
+php artisan make:request Admin/UpdateStudentResultRequest
+php artisan make:request Admin/StoreSubjectConfigRequest
+php artisan make:request Admin/UpdateSubjectConfigRequest
 
-# Middleware for role-based access
-php artisan make:middleware RoleMiddleware
+# Services (manual files)
+# app/Services/ResultCalculationService.php
+# app/Services/Pdf/MarksheetPdfService.php
+# app/Services/Pdf/AttendancePdfService.php
+# app/Services/Import/StudentExcelImportService.php
+# app/Services/Import/StudentResultExcelImportService.php
 ```
 
 ---
 
-## 5) .env settings you need
+## 4) Full database blueprint (all tables)
 
-```dotenv
-APP_NAME="BHS"
-APP_ENV=local
-APP_KEY=
-APP_DEBUG=true
-APP_URL=http://localhost
+> Type choices below are safe Laravel defaults; if you already have live schema, match exact production columns.
 
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=bhs
-DB_USERNAME=root
-DB_PASSWORD=your_password
+## 4.1 users
 
-FILESYSTEM_DISK=public
-```
+Purpose: Auth users + teacher/headmaster accounts
 
-Then:
+Columns:
 
-```bash
-php artisan config:clear
-php artisan cache:clear
-```
+- id (bigint, pk)
+- username (string, unique)
+- password (string) -> hashed
+- full_name (string)
+- role (string, nullable) -> keep for compatibility, but primary role management via Spatie
+- phone (string, nullable)
+- gender (string, nullable)
+- expertise (string, nullable)
+- address (text, nullable)
+- position (string, nullable)
+- description (text, nullable)
+- plain_password (string, nullable) **legacy only; disable in UI**
+- image (string, nullable)
+- remember_token
+- created_at / updated_at
+
+Indexes:
+
+- unique(username)
+- index(role)
+
+## 4.2 slider
+
+- id
+- image (string)
+- created_at / updated_at
+
+## 4.3 awards
+
+- id
+- title (string)
+- subtitle (string, nullable)
+- image (string)
+- created_at / updated_at
+
+## 4.4 activities
+
+- id
+- image (string)
+- title (string)
+- date (string or date, nullable)  # keep compatible with current loose use
+- author (string, nullable)
+- created_at / updated_at
+
+## 4.5 gallery
+
+- id
+- image (string)
+- title (string)
+- description (longText, nullable)
+- category (string, nullable)
+- created_at / updated_at
+
+## 4.6 board_of_directors
+
+- id
+- image_url (string, nullable)
+- name (string)
+- position (string)
+- details (text)
+- description (longText, nullable)
+- committee (string)
+- created_at / updated_at
+
+## 4.7 branch
+
+- id
+- image_url (string, nullable)
+- branch_name (string)
+- branch_address (text, nullable)
+- branch_email (string, nullable)
+- branch_incharge (string, nullable)
+- branch_phone (string, nullable)
+- created_at / updated_at
+
+## 4.8 news
+
+- id
+- image (string, nullable)
+- title (string)
+- description (longText, nullable)
+- created_at / updated_at
+
+## 4.9 notices
+
+- id
+- title (string)
+- date (date)
+- content (longText)
+- badge (string, nullable)
+- created_at / updated_at
+
+Indexes:
+
+- index(date)
+- index(title)
+
+## 4.10 classes
+
+- id
+- className (string)
+- created_at / updated_at
+
+Indexes:
+
+- unique(className)
+
+## 4.11 sections
+
+- id
+- sectionName (string)
+- classId (unsignedBigInteger fk -> classes.id, cascade delete)
+- total_male (unsignedInteger, default 0)
+- total_female (unsignedInteger, default 0)
+- total_students (unsignedInteger, default 0)
+- created_at / updated_at
+
+Indexes:
+
+- index(classId)
+- unique(classId, sectionName)
+
+## 4.12 students
+
+- id
+- user_id (unsignedBigInteger, nullable fk -> users.id, nullOnDelete)
+- section_id (unsignedBigInteger fk -> sections.id, cascade delete)
+- name (string)
+- phone (string, nullable)
+- address (text, nullable)
+- position (string, nullable)
+- image (string, nullable)
+- email (string, nullable)
+- gender (string, nullable)
+- expertise (string, nullable)
+- created_at / updated_at
+
+Indexes:
+
+- index(section_id)
+- index(user_id)
+
+## 4.13 teacher_sections
+
+- id
+- user_id (unsignedBigInteger fk -> users.id, cascade delete)
+- section_id (unsignedBigInteger fk -> sections.id, cascade delete)
+- is_primary (boolean default false)
+- created_at / updated_at
+
+Indexes:
+
+- unique(user_id, section_id)
+- index(user_id)
+- index(section_id)
+
+## 4.14 attendance
+
+- id
+- student_id (unsignedBigInteger fk -> students.id, cascade delete)
+- attendance_date (date)
+- status (enum: present, absent, late, excused)
+- recorded_by (unsignedBigInteger fk -> users.id, nullOnDelete)
+- remarks (text, nullable)
+- created_at / updated_at
+
+Indexes:
+
+- unique(student_id, attendance_date)  # required for upsert behavior
+- index(attendance_date)
+- index(status)
+
+## 4.15 quick_attendance
+
+- id
+- section_id (unsignedBigInteger fk -> sections.id, cascade delete)
+- attendance_date (date)
+- male_count (unsignedInteger, default 0)
+- female_count (unsignedInteger, default 0)
+- recorded_by (unsignedBigInteger fk -> users.id, nullOnDelete)
+- total_male (unsignedInteger, default 0)
+- total_female (unsignedInteger, default 0)
+- total_students (unsignedInteger, default 0)
+- absent_student_ids (text, nullable) # comma-separated ID list (legacy-compatible)
+- created_at / updated_at
+
+Indexes:
+
+- unique(section_id, attendance_date)
+- index(recorded_by)
+- index(attendance_date)
+
+## 4.16 subject_config
+
+- id
+- class_level (unsignedTinyInteger)
+- group_name (string, nullable) # e.g. Science/Business/Humanities/Common
+- subject_key (string)           # e.g. Bangla_1st_CQ
+- subject_name (string)          # e.g. Bangla 1st Paper CQ
+- compulsory (boolean default true)
+- total_marks (unsignedInteger)
+- pass_mark (unsignedInteger)
+- is_optional (boolean default false)
+- created_at / updated_at
+
+Indexes:
+
+- index(class_level)
+- index(group_name)
+- unique(class_level, group_name, subject_key)
+
+## 4.17 student_results (full wide schema)
+
+Identity and exam metadata:
+
+- id
+- student_name (string)
+- father_name (string, nullable)
+- mother_name (string, nullable)
+- guardian_phone (string, nullable)
+- roll (unsignedInteger)
+- class (string)
+- section (string, nullable)
+- group_name (string, nullable)
+- exam_name (string, nullable)
+- year (unsignedSmallInteger)
+- session (string, nullable)
+- publish_date (date, nullable)
+- merit_position (unsignedInteger, nullable)
+- gpa (decimal(4,2), nullable)
+- failed_subjects (string, nullable)
+- remarks (text, nullable)
+- total_marks (unsignedInteger, nullable)
+
+Subject columns:
+
+- Bangla_1st_CQ, Bangla_1st_MCQ
+- Bangla_2nd_CQ, Bangla_2nd_MCQ
+- English_1st_CQ, English_2nd_CQ
+- Mathematics_CQ, Mathematics_MCQ
+- Science_CQ, Science_MCQ
+- Physics_CQ, Physics_MCQ, Physics_Practical
+- Chemistry_CQ, Chemistry_MCQ, Chemistry_Practical
+- Biology_CQ, Biology_MCQ, Biology_Practical
+- HigherMath_CQ, HigherMath_MCQ, HigherMath_Practical
+- Accounting_CQ, Accounting_MCQ
+- BusinessEnt_CQ, BusinessEnt_MCQ
+- Finance_CQ, Finance_MCQ
+- History_CQ, History_MCQ
+- Civics_CQ, Civics_MCQ
+- Geography_CQ, Geography_MCQ, Geography_Practical
+- Economics_CQ, Economics_MCQ
+- BGS_CQ, BGS_MCQ
+- ICT_CQ, ICT_MCQ, ICT_Practical
+- Religion_Name (string, nullable), Religion_CQ, Religion_MCQ
+- Optional_Subject_Name (string, nullable), Optional_CQ, Optional_MCQ, Optional_Practical
+- continuous_assessment
+- ArtsCrafts_Assessment
+- PhysicalEd_Practical
+- PhysicalEd_Assessment
+- is_passed (boolean, default false)
+
+Timestamps:
+
+- created_at / updated_at
+
+Recommended numeric types:
+
+- all mark fields -> `unsignedSmallInteger()->nullable()`
+
+Indexes:
+
+- index(class, section, year)
+- index(roll)
+- index(student_name)
+- optional unique guard for duplicates:
+  - unique(roll, class, section, year, exam_name)
 
 ---
 
-## 6) Database migration blueprint (from your existing SQL usage)
+## 5) Migration skeleton commands
 
-Because the current app has no migration files, first inspect production/local schema:
-
-```bash
-# run in mysql shell
-SHOW CREATE TABLE users;
-SHOW CREATE TABLE students;
-SHOW CREATE TABLE classes;
-SHOW CREATE TABLE sections;
-SHOW CREATE TABLE teacher_sections;
-SHOW CREATE TABLE attendance;
-SHOW CREATE TABLE quick_attendance;
-SHOW CREATE TABLE student_results;
-SHOW CREATE TABLE subject_config;
-SHOW CREATE TABLE notices;
-SHOW CREATE TABLE slider;
-SHOW CREATE TABLE awards;
-SHOW CREATE TABLE gallery;
-SHOW CREATE TABLE board_of_directors;
-SHOW CREATE TABLE activities;
-SHOW CREATE TABLE news;
-SHOW CREATE TABLE branch;
-```
-
-Minimum column requirements inferred from code:
-
-- `users`: username, password, full_name, role, phone, gender, expertise, address, position, description, plain_password, image, timestamps
-- `students`: user_id, section_id, name, phone, address, position, image, email, gender, expertise
-- `classes`: className
-- `sections`: sectionName, classId, total_male, total_female, total_students
-- `teacher_sections`: user_id, section_id, is_primary
-- `attendance`: student_id, attendance_date, status, recorded_by, remarks
-- `quick_attendance`: section_id, attendance_date, male_count, female_count, total_male, total_female, total_students, absent_student_ids, recorded_by
-- `student_results`: all exam fields currently used (many columns)
-- `subject_config`: class_level, group_name(optional), and subject metadata fields used by UI
-- `notices`: title, date, content, badge
-- `slider`: image
-- `awards`: title, subtitle, image
-- `gallery`: image, title, description, category
-- `board_of_directors`: image_url, name, position, details, description, committee
-- `activities`: image, title, date, author
-- `news`: image, title, description
-- `branch`: image_url, branch_name, branch_address, branch_email, branch_incharge, branch_phone
-
-Important DB rule from existing attendance logic:
-
-- Add unique index on attendance to preserve upsert behavior:
-  - `(student_id, attendance_date)` should be unique
-
----
-
-## 7) Route mapping: current app -> Laravel routes
-
-## Public routes (`routes/web.php`)
-
-- `/` -> HomeController@index
-- `/teachers-and-staff` -> Public teacher page
-- `/committee-members` -> Public committee page
-- `/gallery` -> Public gallery page
-- `/notice` -> Public notice list
-- `/notice/{id}` -> Public notice details
-- `/contact` -> Contact page
-- `/student-result` -> result search form
-
-## Auth routes
-
-- Use Breeze defaults (`/login`, `/logout`, etc.)
-- Add role redirect after login:
-  - headmaster -> `/admin/dashboard`
-  - teacher -> `/admin/dashboard` (or teacher-specific)
-
-## Admin routes (`auth` + role middleware)
-
-- `/admin/dashboard`
-- `/admin/sliders` (CRUD)
-- `/admin/awards` (CRUD)
-- `/admin/gallery` (CRUD)
-- `/admin/directors` (CRUD)
-- `/admin/classes` (CRUD)
-- `/admin/sections` (CRUD)
-- `/admin/teacher-sections` (CRUD)
-- `/admin/teachers` (CRUD users)
-- `/admin/students` (CRUD + Excel import)
-- `/admin/attendance` (bulk record + report)
-- `/admin/quick-attendance` (record + report)
-- `/admin/notices` (CRUD)
-- `/admin/student-results` (CRUD + upload + bulk delete)
-- `/admin/subject-config` (CRUD)
-
----
-
-## 8) Roles and authorization in Laravel
-
-Use Spatie:
+After writing migration files:
 
 ```bash
 php artisan migrate
-php artisan db:seed
+php artisan migrate:status
 ```
 
-In seeders, create roles:
+If rebuilding from scratch:
 
-- `headmaster`
-- `teacher`
-- `principal` (optional if you keep current behavior)
-
-Assign role to users; protect routes:
-
-- `->middleware(['auth', 'role:headmaster'])` for full admin
-- `->middleware(['auth', 'role:headmaster|teacher'])` for attendance/result operations
+```bash
+php artisan migrate:fresh
+```
 
 ---
 
-## 9) Blade template conversion map
+## 6) Eloquent model blueprint
 
-## Layouts
+Each model should define:
 
-- Current public layout -> `resources/views/layouts/public.blade.php`
-- Current admin layout/sidebar -> `resources/views/layouts/admin.blade.php`
+- `$table` if non-standard (e.g. `board_of_directors`, `classes`)
+- `$fillable` with all writable fields
+- relationships
 
-## Public pages to create
+Key relationships:
 
-- `resources/views/public/home.blade.php`
-- `resources/views/public/teachers.blade.php`
-- `resources/views/public/committee.blade.php`
-- `resources/views/public/gallery.blade.php`
-- `resources/views/public/notices/index.blade.php`
-- `resources/views/public/notices/show.blade.php`
-- `resources/views/public/contact.blade.php`
-- `resources/views/public/results/search.blade.php`
-
-## Admin pages to create
-
-- `resources/views/admin/dashboard.blade.php`
-- `resources/views/admin/sliders/index.blade.php`
-- `resources/views/admin/awards/index.blade.php`
-- `resources/views/admin/gallery/index.blade.php`
-- `resources/views/admin/directors/index.blade.php`
-- `resources/views/admin/classes/index.blade.php`
-- `resources/views/admin/sections/index.blade.php`
-- `resources/views/admin/teacher_sections/index.blade.php`
-- `resources/views/admin/teachers/index.blade.php`
-- `resources/views/admin/students/index.blade.php`
-- `resources/views/admin/attendance/index.blade.php`
-- `resources/views/admin/quick_attendance/index.blade.php`
-- `resources/views/admin/notices/index.blade.php`
-- `resources/views/admin/student_results/index.blade.php`
-- `resources/views/admin/subject_config/index.blade.php`
+- User hasMany Students (`user_id`)
+- User hasMany TeacherSections (`user_id`)
+- Student belongsTo Section
+- Student belongsTo User
+- Section belongsTo SchoolClass (`classId`)
+- Section hasMany Students
+- TeacherSection belongsTo User + Section
+- Attendance belongsTo Student + recorder(User)
+- QuickAttendance belongsTo Section + recorder(User)
 
 ---
 
-## 10) File upload migration plan (important)
+## 7) Controller blueprint (full)
 
-Current app stores filenames and serves `/uploads/*`.
+## 7.1 Public controllers
 
-Laravel equivalent:
+### `Public\HomeController`
 
-- Store in `storage/app/public/uploads/...`
-- Save path in DB (for example: `uploads/sliders/file.jpg`)
-- Access with:
-  - `Storage::url($path)`
-  - `<img src="{{ Storage::url($item->image) }}">`
+- `index()` -> slider, awards, notices, highlights, teachers summary
 
-For forms:
+### `Public\TeacherController`
 
-- Validate with `image|mimes:jpg,jpeg,png,gif,webp|max:5120`
-- On update, delete old file if replaced
+- `index()` -> list teachers from users by role/position
+
+### `Public\CommitteeController`
+
+- `index(Request $request)` -> directors list, optional committee filter
+
+### `Public\GalleryController`
+
+- `index(Request $request)` -> category-filtered gallery
+
+### `Public\NoticeController`
+
+- `index(Request $request)` -> notice list + pagination/search
+- `show(Notice $notice)` -> notice detail
+
+### `Public\ResultController`
+
+- `searchForm()`
+- `search(Request $request)` -> by `student_name`, `roll`, `year`
+- `groupedSummary()` -> class/section/year grouped blocks
+
+## 7.2 Auth flow controller logic
+
+Use Breeze + extend post-login redirect:
+
+- `headmaster|principal` -> `/admin/dashboard`
+- `teacher` -> `/admin/dashboard` (or `/admin/teacher-dashboard`)
+
+## 7.3 Admin controllers
+
+### `Admin\DashboardController`
+
+- `index()` -> class/section/user counts + quick attendance report filter form
+
+### `Admin\UserController` (teacher/headmaster users)
+
+- `index()`
+- `create()`, `store()`
+- `edit(User $user)`, `update(User $user)`
+- `destroy(User $user)`
+
+### `Admin\SliderController`
+
+- `index()`
+- `store()`
+- `update(Slider $slider)`
+- `destroy(Slider $slider)`
+
+### `Admin\AwardController`
+
+- `index()`, `store()`, `update()`, `destroy()`
+
+### `Admin\GalleryController`
+
+- `index()`, `store()`, `update()`, `destroy()`
+
+### `Admin\DirectorController`
+
+- `index()`
+- `store()`
+- `update(Director $director)`
+- `destroy(Director $director)`
+
+### `Admin\ClassController`
+
+- `index()`, `store()`, `update()`, `destroy()`
+
+### `Admin\SectionController`
+
+- `index()`, `store()`, `update()`, `destroy()`
+
+### `Admin\TeacherSectionController`
+
+- `index(Request $request)` -> teacher filtered
+- `store()` -> assign section
+- `update(TeacherSection $teacherSection)`
+- `destroy(TeacherSection $teacherSection)`
+
+### `Admin\StudentController`
+
+- `index(Request $request)` (section filter)
+- `create()`, `store()`
+- `edit(Student $student)`, `update(Student $student)`
+- `destroy(Student $student)`
+- `importExcel(Request $request)` # student excel import
+
+### `Admin\AttendanceController` (per-student)
+
+- `index()` -> section + student attendance UI
+- `storeBulk(StoreAttendanceBulkRequest $request)`  
+  Upsert by `(student_id, attendance_date)`
+- `sectionAttendance($sectionId, Request $request)` -> by section/date
+- `studentAttendance($studentId, Request $request)` -> by student/date range
+- `report(Request $request)` -> section report
+
+### `Admin\QuickAttendanceController`
+
+- `index()` -> list quick entries
+- `store(StoreQuickAttendanceRequest $request)` -> prevent duplicate section+date
+- `update(QuickAttendance $quickAttendance)`
+- `report(Request $request)` -> filters: date/startDate/endDate/sectionId/classId/teacherId
+
+### `Admin\NoticeController`
+
+- `index()`, `store()`, `update()`, `destroy()`
+- `search()`, `paginate()`
+
+### `Admin\SubjectConfigController`
+
+- `index()`
+- `store()`
+- `update(SubjectConfig $subjectConfig)`
+- `destroy(SubjectConfig $subjectConfig)`
+- `byClass($classLevel)`
+- `byClassAndGroup($classLevel, $groupName)`
+
+### `Admin\StudentResultController`
+
+- `index(Request $request)` (list + filters)
+- `store(StoreStudentResultRequest $request)`
+- `update(StudentResult $studentResult, UpdateStudentResultRequest $request)`
+- `destroy(StudentResult $studentResult)`
+- `search(Request $request)` (flexible public style)
+- `strictSearch(Request $request)` (exact search)
+- `groupedSummary()`
+- `bulkDelete(Request $request)`
+- `uploadExcel(Request $request)` # results excel import
+- `downloadMarksheet(StudentResult $studentResult)` # PDF
+
+### `Admin\ReportController`
+
+- `tabulation(Request $request)` data
+- `meritList(Request $request)` data
+- `failList(Request $request)` data
+- `downloadTabulationPdf(Request $request)`
+- `downloadMeritPdf(Request $request)`
+- `downloadFailPdf(Request $request)`
+- `exportTabulationExcel(Request $request)`
 
 ---
 
-## 11) Student result module strategy (critical module)
+## 8) Validation rule blueprint (important)
 
-`student_results` currently uses a very wide table (many subject columns).  
-For fast parity migration, keep same structure first:
+## Attendance bulk
 
-1. Keep wide table schema exactly
-2. Move existing Excel import logic into Laravel-Excel or PhpSpreadsheet service
-3. Keep current filters:
-   - by name/roll/year
-   - grouped summary by class/section/year
-4. Rebuild admin edit form as Blade tabs/sections (do not attempt full redesign first)
-
-Later optimization (phase 2):
-
-- Normalize into `exam_results`, `result_subject_marks`, `subjects`
-
----
-
-## 12) Attendance migration notes
-
-## Normal attendance
-
-- Keep per-student attendance table
-- Keep enum statuses used now: `present`, `absent`, `late`, `excused`
-- Preserve unique `(student_id, attendance_date)` logic
+- `attendance_data` required array
+- each row:
+  - `student_id` exists:students,id
+  - `attendance_date` date
+  - `status` in:present,absent,late,excused
+  - `recorded_by` exists:users,id
 
 ## Quick attendance
 
-- Keep aggregate counts per section/date
-- Keep report filters:
-  - date
-  - date range
-  - section
-  - class
-  - teacher
+- `section_id` exists:sections,id
+- `attendance_date` date
+- `male_count` integer|min:0
+- `female_count` integer|min:0
+- `total_male` integer|min:0
+- `total_female` integer|min:0
+- `total_students` integer|min:0
+- `recorded_by` exists:users,id
+- `absent_student_ids` nullable string
+
+## Student result
+
+- required: `student_name`, `roll`, `class`, `year`
+- optional numeric validation for all mark fields
+- `is_passed` boolean
+
+## File uploads
+
+- images: `image|mimes:jpg,jpeg,png,gif,webp|max:5120`
+- excel: `file|mimes:xlsx,xls|max:20480`
 
 ---
 
-## 13) Data migration (existing MySQL -> Laravel)
+## 9) Role and middleware blueprint
 
-If Laravel app uses same database:
+Seed roles:
 
-- Point `.env` to current DB
-- Create migrations carefully (or map to existing tables names)
+- `headmaster`
+- `teacher`
+- `principal` (optional)
 
-If moving to new DB:
+Use middleware:
 
-1. Export old DB
-2. Import into new DB
-3. Run Laravel migration adjustments
-4. Validate row counts and key joins
+- `auth`
+- `role:headmaster`
+- `role:headmaster|teacher`
 
-Validation SQL examples:
+Example:
 
-```sql
-SELECT COUNT(*) FROM users;
-SELECT COUNT(*) FROM students;
-SELECT COUNT(*) FROM student_results;
-SELECT COUNT(*) FROM attendance;
-SELECT COUNT(*) FROM quick_attendance;
-```
+- full CRUD modules (`users/classes/sections/subject-config`) -> headmaster
+- attendance + quick attendance + result input -> headmaster|teacher
 
 ---
 
-## 14) Suggested implementation order
+## 10) Route blueprint (web)
 
-1. Bootstrap Laravel + auth + role middleware
-2. Migrations/models for foundational entities (`users`, `classes`, `sections`, `students`)
-3. Public pages (home/notices/gallery/search)
-4. Admin core CRUD (class/section/teacher/student)
-5. Attendance + quick attendance
-6. Student results + Excel import
-7. Remaining modules (slider/award/director/gallery polish)
-8. QA + production deploy
-
----
-
-## 15) Route skeleton example (`routes/web.php`)
+Example `routes/web.php` layout:
 
 ```php
 use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\TeacherController;
+use App\Http\Controllers\Public\CommitteeController;
+use App\Http\Controllers\Public\GalleryController as PublicGalleryController;
 use App\Http\Controllers\Public\NoticeController as PublicNoticeController;
+use App\Http\Controllers\Public\ResultController;
+
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Admin\AwardController;
+use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\DirectorController;
 use App\Http\Controllers\Admin\ClassController;
 use App\Http\Controllers\Admin\SectionController;
+use App\Http\Controllers\Admin\TeacherSectionController;
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\AttendanceController;
+use App\Http\Controllers\Admin\QuickAttendanceController;
+use App\Http\Controllers\Admin\NoticeController;
+use App\Http\Controllers\Admin\StudentResultController;
+use App\Http\Controllers\Admin\SubjectConfigController;
+use App\Http\Controllers\Admin\ReportController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/notice', [PublicNoticeController::class, 'index'])->name('notice.index');
-Route::get('/notice/{notice}', [PublicNoticeController::class, 'show'])->name('notice.show');
+Route::get('/teachers-and-staff', [TeacherController::class, 'index'])->name('public.teachers.index');
+Route::get('/committee-members', [CommitteeController::class, 'index'])->name('public.committee.index');
+Route::get('/gallery', [PublicGalleryController::class, 'index'])->name('public.gallery.index');
+Route::get('/notice', [PublicNoticeController::class, 'index'])->name('public.notice.index');
+Route::get('/notice/{notice}', [PublicNoticeController::class, 'show'])->name('public.notice.show');
+Route::get('/student-result', [ResultController::class, 'searchForm'])->name('public.result.form');
+Route::get('/student-result/search', [ResultController::class, 'search'])->name('public.result.search');
 
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::middleware('role:headmaster')->group(function () {
-        Route::resource('classes', ClassController::class);
-        Route::resource('sections', SectionController::class);
+        Route::resource('users', UserController::class)->except(['show']);
+        Route::resource('sliders', SliderController::class)->except(['show', 'create', 'edit']);
+        Route::resource('awards', AwardController::class)->except(['show', 'create', 'edit']);
+        Route::resource('gallery', GalleryController::class)->except(['show', 'create', 'edit']);
+        Route::resource('directors', DirectorController::class)->except(['show', 'create', 'edit']);
+        Route::resource('classes', ClassController::class)->except(['show', 'create', 'edit']);
+        Route::resource('sections', SectionController::class)->except(['show', 'create', 'edit']);
+        Route::resource('teacher-sections', TeacherSectionController::class)->except(['show', 'create', 'edit']);
+        Route::resource('subject-config', SubjectConfigController::class)->except(['show', 'create', 'edit']);
+        Route::resource('notices', NoticeController::class)->except(['show', 'create', 'edit']);
     });
 
     Route::middleware('role:headmaster|teacher')->group(function () {
-        Route::resource('students', StudentController::class);
+        Route::resource('students', StudentController::class)->except(['show']);
+        Route::post('students/import-excel', [StudentController::class, 'importExcel'])->name('students.import');
+
+        Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+        Route::post('attendance/bulk', [AttendanceController::class, 'storeBulk'])->name('attendance.bulk');
+        Route::get('attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
+
+        Route::resource('quick-attendance', QuickAttendanceController::class)->only(['index', 'store', 'update']);
+        Route::get('quick-attendance/report', [QuickAttendanceController::class, 'report'])->name('quick-attendance.report');
+
+        Route::resource('student-results', StudentResultController::class)->except(['create', 'edit', 'show']);
+        Route::post('student-results/upload-excel', [StudentResultController::class, 'uploadExcel'])->name('student-results.upload');
+        Route::post('student-results/bulk-delete', [StudentResultController::class, 'bulkDelete'])->name('student-results.bulk-delete');
+        Route::get('student-results/{studentResult}/marksheet-pdf', [StudentResultController::class, 'downloadMarksheet'])->name('student-results.marksheet-pdf');
+    });
+
+    Route::middleware('role:headmaster|teacher')->prefix('reports')->name('reports.')->group(function () {
+        Route::get('/tabulation', [ReportController::class, 'tabulation'])->name('tabulation');
+        Route::get('/merit-list', [ReportController::class, 'meritList'])->name('merit');
+        Route::get('/fail-list', [ReportController::class, 'failList'])->name('fail');
+        Route::get('/tabulation/pdf', [ReportController::class, 'downloadTabulationPdf'])->name('tabulation.pdf');
+        Route::get('/merit-list/pdf', [ReportController::class, 'downloadMeritPdf'])->name('merit.pdf');
+        Route::get('/fail-list/pdf', [ReportController::class, 'downloadFailPdf'])->name('fail.pdf');
     });
 });
 ```
 
 ---
 
-## 16) Commands checklist for full migration execution
+## 11) PDF blueprint: Result Marksheet (exact behavior spec)
+
+Source parity target: current `utility/marksheet.js`.
+
+## 11.1 Format and branding
+
+- Page: A4 portrait
+- Font: Bangla-compatible (`Anek Bangla`)
+- Header:
+  - school logo left
+  - school name, established year, address, email/mobile center
+  - school code + EIIN
+- Right top box: grading scale table:
+  - A+ 80-100 -> 5.0
+  - A 70-79 -> 4.0
+  - A- 60-69 -> 3.5
+  - B 50-59 -> 3.0
+  - C 40-49 -> 2.0
+  - D 33-39 -> 1.0
+  - F 0-32 -> 0.0
+
+## 11.2 Student information block
+
+Show:
+
+- Name
+- Father's Name
+- Mother's Name
+- Guardian Phone
+- Session
+- Roll
+- Class
+- Section
+- Group
+- Year
+- Exam name
+
+## 11.3 Subject table
+
+Columns:
+
+- SL
+- Subject
+- CQ
+- MCQ
+- Practical
+- Total
+- Grade
+- GPA
+
+Build rows from `subject_config` by `class_level` + optional `group_name`.
+
+Special mapping rules:
+
+- Religion uses: `Religion_Name`, `Religion_CQ`, `Religion_MCQ`
+- Optional uses: `Optional_Subject_Name`, `Optional_CQ`, `Optional_MCQ`, `Optional_Practical`
+- Assessment-style fields (ArtsCrafts/PhysicalEd) include practical/assessment mark behavior
+
+## 11.4 Result calculation rules
+
+- Calculate subject total from available CQ/MCQ/Practical
+- Pass if `total >= pass_mark`
+- Subject grade by percentage
+- Fail subject list = all subjects where pass false
+- Final GPA = average GPA of eligible subjects (or business rule from your existing calculator)
+- Overall result:
+  - if any required subject failed -> Fail
+  - else Pass
+
+## 11.5 Footer
+
+- Total marks, GPA, final grade
+- Failed subjects list box (if any)
+- signature lines:
+  - Guardian
+  - Class Teacher
+  - Principal
+- generated date
+
+## 11.6 Laravel implementation files
+
+- `app/Services/ResultCalculationService.php`
+- `app/Services/Pdf/MarksheetPdfService.php`
+- `resources/views/pdf/marksheet.blade.php`
+
+Example generation:
+
+```php
+return Pdf::loadView('pdf.marksheet', $payload)
+    ->setPaper('a4', 'portrait')
+    ->download("marksheet_{$studentResult->roll}.pdf");
+```
+
+---
+
+## 12) PDF blueprint: Attendance Report (exact behavior spec)
+
+Source parity target: current `utility/quickattendencePage.js`.
+
+## 12.1 Format and branding
+
+- Page: A4 portrait
+- Same school header style + logo
+- Title: Daily Attendance Report with selected date/range
+
+## 12.2 Table structure
+
+Columns:
+
+- Serial
+- Class
+- Section
+- Total Students (sub columns: Male, Female)
+- Total Students (combined)
+- Present (sub columns: Male, Female)
+- Total Present
+- Total Absent
+- Attendance %
+
+Row calculations:
+
+- `present = male_count + female_count`
+- `absent = total_students - present`
+- `percentage = present / total_students * 100`
+
+Footer totals row:
+
+- total male students
+- total female students
+- grand total
+- total present male/female
+- overall present/absent
+- overall percentage
+
+Absent list section:
+
+- display absent ids by class-section
+- format: `ClassName-SectionName: 123, 456`
+
+Signatures:
+
+- Class Teacher
+- Headmaster
+
+## 12.3 Laravel implementation files
+
+- `app/Services/Pdf/AttendancePdfService.php`
+- `resources/views/pdf/attendance-report.blade.php`
+
+Example generation:
+
+```php
+return Pdf::loadView('pdf.attendance-report', $payload)
+    ->setPaper('a4', 'portrait')
+    ->download("attendance_report_{$from}_{$to}.pdf");
+```
+
+---
+
+## 13) Tabulation / Merit / Fail report blueprint (admin)
+
+Current app also generates:
+
+- Tabulation Sheet PDF (A3 landscape)
+- Merit List PDF
+- Fail List PDF
+
+Laravel parity files:
+
+- `resources/views/pdf/tabulation-sheet.blade.php` (A3 landscape)
+- `resources/views/pdf/merit-list.blade.php`
+- `resources/views/pdf/fail-list.blade.php`
+
+Controller endpoints:
+
+- `ReportController@downloadTabulationPdf`
+- `ReportController@downloadMeritPdf`
+- `ReportController@downloadFailPdf`
+- Excel equivalents via `maatwebsite/excel`
+
+---
+
+## 14) Upload/storage blueprint
+
+Use Laravel public disk:
+
+- Save to `storage/app/public/uploads/...`
+- DB value example: `uploads/students/abc.jpg`
+- render with `Storage::url($path)`
+
+Folder strategy:
+
+- `uploads/sliders`
+- `uploads/awards`
+- `uploads/gallery`
+- `uploads/directors`
+- `uploads/users`
+- `uploads/students`
+- `uploads/imports`
+
+---
+
+## 15) API compatibility (optional but recommended)
+
+If you want zero frontend break during migration, temporarily keep old API paths in `routes/api.php`:
+
+- `/api/auth/*`
+- `/api/slider/*`
+- `/api/award/*`
+- `/api/gallery/*`
+- `/api/director/*`
+- `/api/classes/*`
+- `/api/sections/*`
+- `/api/students/*`
+- `/api/teacher-sections/*`
+- `/api/attendance/*`
+- `/api/quickattendance/*`
+- `/api/notices/*`
+- `/api/student-results/*`
+- `/api/subject-config/*`
+
+Then progressively switch Blade pages to server-rendered routes.
+
+---
+
+## 16) Seeder blueprint
+
+Create:
+
+- `RolePermissionSeeder`
+- `AdminUserSeeder`
+- `ClassSectionSeeder` (optional)
+
+RolePermissionSeeder minimum:
+
+- roles: `headmaster`, `teacher`, `principal`
+- attach default permissions per module
+
+AdminUserSeeder:
+
+- create first headmaster login
+
+---
+
+## 17) Security and cleanup notes
+
+- Keep `plain_password` only as legacy nullable field; do not store new plain passwords
+- Enforce CSRF on all forms
+- Enforce policy/middleware on all admin actions
+- Validate file MIME and size
+- Normalize role values to lowercase everywhere
+
+---
+
+## 18) Build order (recommended exact sequence)
+
+1. Auth + roles + admin layout
+2. Core tables (`users`, `classes`, `sections`, `students`)
+3. Teacher-section + attendance + quick attendance
+4. Subject config + student results (wide schema)
+5. PDF services (marksheet + attendance + tabulation)
+6. Public pages (home, notice, gallery, teachers, committee)
+7. Remaining content modules (slider, awards, activities, news, branch)
+8. Excel import/export and final QA
+
+---
+
+## 19) Final execution checklist
 
 ```bash
-# after creating project and scaffolding
 php artisan migrate
 php artisan db:seed
 php artisan storage:link
+php artisan optimize:clear
+php artisan route:list
 npm run build
 php artisan serve
 ```
 
-During development:
-
-```bash
-php artisan optimize:clear
-php artisan route:list
-php artisan migrate:fresh --seed
-```
-
 ---
 
-## 17) Risks you should handle early
+## 20) Next code generation scope
 
-- Current project has inconsistent role casing in places (`Headmaster` vs `headmaster`)
-- Some current endpoints are unprotected; enforce strict middleware in Laravel
-- `plain_password` exists in old schema; remove usage ASAP (store only hashed password)
-- `student_results` wide-table complexity can slow initial delivery
-- Upload path differences can break old image URLs unless mapped carefully
+If you want, next step can be generated directly from this blueprint:
 
----
-
-## 18) Final recommendation
-
-For a successful full Blade migration:
-
-1. Build **feature parity first** (same screens/workflow).
-2. Keep current DB shape initially.
-3. Refactor schema only after stable parity release.
-
-If you want, next step I can generate:
-
-- complete `routes/web.php`
-- migration files for every table
-- starter Blade layouts (`public` + `admin`)
-- first 3 controllers (`Home`, `Notice`, `Admin Dashboard`)
-
-as directly runnable Laravel code.
+1. All migration files with exact columns/indexes
+2. All controller classes with method stubs and validation
+3. `routes/web.php` + optional `routes/api.php` compatibility layer
+4. `resources/views/pdf/marksheet.blade.php`
+5. `resources/views/pdf/attendance-report.blade.php`
+6. Result calculation service class with your current grade rules
